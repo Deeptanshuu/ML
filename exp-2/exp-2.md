@@ -65,5 +65,5 @@ print("Explained Variance Ratio (MNIST):", pca_mnist.explained_variance_ratio_)
 
 ### Output
 
-![Output](./exp-2.png)
-![Graph](./pca_mnist_plot.png)
+![Output](https://github.com/Deeptanshuu/ML/raw/main/exp-2/exp-2.png)
+![Graph](https://github.com/Deeptanshuu/ML/raw/main/exp-2/pca_mnist_plot.png)
