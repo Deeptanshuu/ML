@@ -1,0 +1,22 @@
+# Ignore the virtual environment folder
+myenv/
+
+# Ignore Python compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Ignore the saved plot image
+pca_mnist_plot.png
+
+# Ignore other common files and folders
+__pycache__/
+*.swp
+.DS_Store
+.env
+
+# Ignore specific OS-generated files
+Thumbs.db
