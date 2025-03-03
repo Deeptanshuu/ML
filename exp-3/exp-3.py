@@ -1,57 +1,44 @@
-import numpy as np
+# Importing necessary libraries
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
-# Importing the dataset
-data_set = pd.read_csv('Dataset.csv', delimiter=',')
+# Load the dataset (replace with the correct path to your file)
+path = "Life Expectancy Data.csv"
+data = pd.read_csv(path)
 
-# Ensuring all values are numeric and handling incorrect formatting
-data_set = data_set.apply(pd.to_numeric, errors='coerce')
+# Selecting relevant columns: 'BMI' (independent variable) and 'Life expectancy' (dependent variable)
+data = data[['BMI', 'Life expectancy']]
+data = data.dropna()  # Drop rows with missing values
 
-# Extracting independent and dependent variables
-x = data_set.iloc[:, 1:].values  # Excluding the 'User' column
-y = data_set.iloc[:, 0].values  # Keeping 'User' as the dependent variable
+# Features (X) and target (y)
+X = data['BMI'].values.reshape(-1, 1)  # Reshape for sklearn compatibility
+y = data['Life expectancy'].values
 
-# Handling missing data (Replacing missing data with the mean value)
-imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
-imputer.fit(x)
-x = imputer.transform(x)
+# Splitting data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Splitting the dataset into the Training set and Test set
-x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=0)
+# Creating and training the linear regression model
+model = LinearRegression()
+model.fit(X_train, y_train)
 
-# Feature Scaling
-sc = StandardScaler()
-x_train = sc.fit_transform(x_train)
-x_test = sc.transform(x_test)
+# Making predictions on the test set
+y_pred = model.predict(X_test)
 
-# Implementing Linear Regression
-mean_x = np.mean(x_train, axis=0)
-mean_y = np.mean(y_train)
+# Calculating root mean squared error
+rmse = mean_squared_error(y_test, y_pred)**0.5
+print(f"Root Mean Squared Error: {rmse:.2f} years")
 
-# Calculating coefficients
-cov_xy = np.sum((x_train - mean_x) * (y_train.reshape(-1, 1) - mean_y), axis=0)
-var_x = np.sum((x_train - mean_x) ** 2, axis=0)
-beta = cov_xy / var_x
-alpha = mean_y - np.dot(mean_x, beta)
-
-# Predicting values
-y_pred = alpha + np.dot(x_test, beta)
-
-# Plotting regression against actual data
-plt.scatter(x_test[:, 0], y_test, color='red', label='Actual data')
-plt.plot(x_test[:, 0], y_pred, color='blue', label='Regression line')
-plt.xlabel('Independent Variable')
-plt.ylabel('Dependent Variable')
-plt.title('Linear Regression')
+# Plotting the results
+plt.figure(figsize=(10, 6))
+plt.scatter(X, y, color='blue', label='Data Points')  # Scatter plot of data points
+plt.plot(X_test, model.predict(X_test), color='red', label='Regression Line')  # Regression line
+plt.title('Linear Regression: BMI vs Life Expectancy')
+plt.xlabel('BMI')
+plt.ylabel('Life Expectancy')
 plt.legend()
+plt.savefig("linear_regression_plot.png")  # Save the plot as an image file
 plt.show()
-
-# Displaying preprocessed data
-print("Training data after preprocessing:")
-print(x_train[:5])  # Display first 5 rows of processed training data
-print("Test data after preprocessing:")
-print(x_test[:5])  # Display first 5 rows of processed test data
