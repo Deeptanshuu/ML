@@ -182,15 +182,3 @@ Inputs: [1, 1], Output: 0
 ===== NOT Gate =====
 Inputs: [0], Output: 1
 Inputs: [1], Output: 0
-
-===== XOR Gate =====
-XOR cannot be implemented with a single McCulloch-Pitts neuron.
-It requires a network of neurons.
-```
-
-### Visual Outputs
-![AND Gate](https://github.com/Deeptanshuu/ML/raw/main/exp-5/and_gate.png)
-![OR Gate](https://github.com/Deeptanshuu/ML/raw/main/exp-5/or_gate.png)
-![NAND Gate](https://github.com/Deeptanshuu/ML/raw/main/exp-5/nand_gate.png)
-![NOR Gate](https://github.com/Deeptanshuu/ML/raw/main/exp-5/nor_gate.png)
-![NOT Gate](https://github.com/Deeptanshuu/ML/raw/main/exp-5/not_gate.png) 
