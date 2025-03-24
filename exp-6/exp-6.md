@@ -28,4 +28,4 @@ Weighted Avg.    0.740    0.362    0.732      0.740    0.733      0.399    0.689
  16 18 |  b = c1
 ```
 
-![OUTPUT](https://github.com/deeptanshuu/ML/raw/main/exp-6/op.png)
+![OUTPUT](https://github.com/Deeptanshuu/ML/raw/main/exp-6/op.png)
