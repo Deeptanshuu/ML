@@ -112,6 +112,44 @@ if __name__ == "__main__":
     main()
 ```
 
+### Output
+```
+PS V:\Deeptanshu Lal\PROJECTS\ML> python .\exp-6\exp-6.py
+
+=============== Naive Bayes on Iris Dataset ===============
+
+Dataset Information:
+Number of samples: 150
+Number of features: 4
+Number of classes: 3
+Classes: ['setosa' 'versicolor' 'virginica']
+Features: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+
+Training set size: 105
+Test set size: 45
+
+Training Naive Bayes classifier...
+
+Accuracy: 0.9778 (97.78%)
+
+Confusion Matrix:
+[[19  0  0]
+ [ 0 12  1]
+ [ 0  0 13]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        19
+  versicolor       1.00      0.92      0.96        13
+   virginica       0.93      1.00      0.96        13
+
+    accuracy                           0.98        45
+   macro avg       0.98      0.97      0.97        45
+weighted avg       0.98      0.98      0.98        45
+
+```
+
 ### Visual Outputs
 ![Iris Confusion Matrix](https://github.com/Deeptanshuu/ML/raw/main/exp-6/naive_bayes_iris_confusion_matrix.png)
 ![Iris Feature Distribution](https://github.com/Deeptanshuu/ML/raw/main/exp-6/naive_bayes_iris_feature_distribution.png)
