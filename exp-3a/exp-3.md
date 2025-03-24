@@ -1,4 +1,4 @@
-## Experiment - 3 Linear Regression: BMI vs Life Expectancy
+## Experiment - 3A Linear Regression: BMI vs Life Expectancy
 
 ### Code
 ```python

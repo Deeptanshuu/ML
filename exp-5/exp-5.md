@@ -1,152 +1,111 @@
-## Experiment - 5 McCulloch-Pitts Neural Network Model
+## Experiment - 5 Naive Bayes Classification
 
 ### Code
 ```python
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.preprocessing import LabelEncoder
+from sklearn.datasets import load_iris
 
-class McCullochPittsNeuron:
-    def __init__(self, weights, threshold):
-        """
-        Initialize a McCulloch-Pitts neuron
-        
-        Parameters:
-        weights (list): The weights for each input
-        threshold (float): The threshold for activation
-        """
-        self.weights = np.array(weights)
-        self.threshold = threshold
+def implement_naive_bayes(dataset_name):
+    print(f"\n{'='*15} Naive Bayes on {dataset_name} Dataset {'='*15}")
     
-    def activate(self, inputs):
-        """
-        Calculate the output of the neuron given the inputs
-        
-        Parameters:
-        inputs (list): The input values
-        
-        Returns:
-        int: 1 if the weighted sum is greater than or equal to threshold, 0 otherwise
-        """
-        # Calculate the weighted sum
-        weighted_sum = np.dot(inputs, self.weights)
-        
-        # Apply the threshold activation function
-        return 1 if weighted_sum >= self.threshold else 0
+    # Load the chosen dataset
+    if dataset_name == "Iris":
+        data = load_iris()
+        X = data.data
+        y = data.target
+        feature_names = data.feature_names
+        target_names = data.target_names
+    elif dataset_name == "Wine":
+        data = load_wine()
+        X = data.data
+        y = data.target
+        feature_names = data.feature_names
+        target_names = data.target_names
     
-    def test_logic_gate(self, inputs_matrix):
-        """
-        Test the neuron on multiple input combinations
-        
-        Parameters:
-        inputs_matrix (list of lists): Matrix containing input combinations
-        
-        Returns:
-        list: The outputs for each input combination
-        """
-        outputs = []
-        for inputs in inputs_matrix:
-            output = self.activate(inputs)
-            outputs.append(output)
-            print(f"Inputs: {inputs}, Output: {output}")
-        return outputs
-
-def plot_logic_gate(gate_name, inputs, outputs):
-    """
-    Plot the truth table of a logic gate
+    # Split data into training and test sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
     
-    Parameters:
-    gate_name (str): The name of the logic gate
-    inputs (list of lists): Matrix containing input combinations
-    outputs (list): The outputs for each input combination
-    """
+    # Display dataset information
+    print(f"\nDataset Information:")
+    print(f"Number of samples: {X.shape[0]}")
+    print(f"Number of features: {X.shape[1]}")
+    print(f"Number of classes: {len(target_names)}")
+    print(f"Classes: {target_names}")
+    print(f"Features: {feature_names}")
+    print(f"\nTraining set size: {X_train.shape[0]}")
+    print(f"Test set size: {X_test.shape[0]}")
+    
+    # Initialize and train the Naive Bayes classifier
+    print("\nTraining Naive Bayes classifier...")
+    naive_bayes = GaussianNB()
+    naive_bayes.fit(X_train, y_train)
+    
+    # Make predictions
+    y_pred = naive_bayes.predict(X_test)
+    
+    # Calculate accuracy
+    accuracy = accuracy_score(y_test, y_pred)
+    print(f"\nAccuracy: {accuracy:.4f} ({accuracy*100:.2f}%)")
+    
+    # Display confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    print("\nConfusion Matrix:")
+    print(cm)
+    
+    # Display classification report
+    print("\nClassification Report:")
+    report = classification_report(y_test, y_pred, target_names=target_names)
+    print(report)
+    
+    # Visualize confusion matrix
     plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', 
+                xticklabels=target_names, 
+                yticklabels=target_names)
+    plt.xlabel('Predicted')
+    plt.ylabel('True')
+    plt.title(f'Confusion Matrix - {dataset_name} Dataset')
+    plt.tight_layout()
+    plt.savefig(f"naive_bayes_{dataset_name.lower()}_confusion_matrix.png")
     
-    # For 2 input gates
-    if len(inputs[0]) == 2:
-        x1 = [row[0] for row in inputs]
-        x2 = [row[1] for row in inputs]
-        plt.scatter(x1, x2, c=outputs, cmap='coolwarm', s=200, alpha=0.8)
-        
-        for i, (x1_val, x2_val) in enumerate(zip(x1, x2)):
-            plt.annotate(f"Output: {outputs[i]}", 
-                        (x1_val, x2_val),
-                        xytext=(10, 5),
-                        textcoords='offset points')
-        
-        plt.xlabel('Input 1')
-        plt.ylabel('Input 2')
-        plt.grid(True)
-        plt.title(f'{gate_name} Gate')
-        plt.savefig(f"{gate_name.lower()}_gate.png")
+    # Visualize probability distributions
+    # For simplicity, we'll just plot the first two features for each class
+    plt.figure(figsize=(12, 6))
     
-    # For single input gates (like NOT)
-    elif len(inputs[0]) == 1:
-        x = [row[0] for row in inputs]
-        plt.scatter(x, outputs, c=outputs, cmap='coolwarm', s=200, alpha=0.8)
-        
-        for i, x_val in enumerate(x):
-            plt.annotate(f"Input: {x_val}, Output: {outputs[i]}", 
-                        (x_val, outputs[i]),
-                        xytext=(10, 5),
-                        textcoords='offset points')
-        
-        plt.xlabel('Input')
-        plt.ylabel('Output')
-        plt.grid(True)
-        plt.title(f'{gate_name} Gate')
-        plt.savefig(f"{gate_name.lower()}_gate.png")
+    # Create a DataFrame for easier plotting
+    df = pd.DataFrame(X, columns=feature_names)
+    df['target'] = y
+    df['target_name'] = [target_names[i] for i in y]
+    
+    # Plot the first two features
+    plt.subplot(1, 2, 1)
+    sns.scatterplot(x=feature_names[0], y=feature_names[1], hue='target_name', data=df)
+    plt.title(f'{feature_names[0]} vs {feature_names[1]}')
+    
+    # Plot another set of features if available
+    if len(feature_names) > 3:
+        plt.subplot(1, 2, 2)
+        sns.scatterplot(x=feature_names[2], y=feature_names[3], hue='target_name', data=df)
+        plt.title(f'{feature_names[2]} vs {feature_names[3]}')
+    
+    plt.tight_layout()
+    plt.savefig(f"naive_bayes_{dataset_name.lower()}_feature_distribution.png")
+    
+    return accuracy, report
 
 def main():
-    # Define input combinations for 2-input logic gates
-    inputs_2bit = [
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1]
-    ]
+    # Implement Naive Bayes on Iris dataset
+    implement_naive_bayes("Iris")
     
-    print("\n===== AND Gate =====")
-    # AND gate: both inputs must be 1 to get output 1
-    and_neuron = McCullochPittsNeuron(weights=[1, 1], threshold=2)
-    and_outputs = and_neuron.test_logic_gate(inputs_2bit)
-    plot_logic_gate("AND", inputs_2bit, and_outputs)
     
-    print("\n===== OR Gate =====")
-    # OR gate: at least one input must be 1 to get output 1
-    or_neuron = McCullochPittsNeuron(weights=[1, 1], threshold=1)
-    or_outputs = or_neuron.test_logic_gate(inputs_2bit)
-    plot_logic_gate("OR", inputs_2bit, or_outputs)
-    
-    print("\n===== NAND Gate =====")
-    # NAND gate: only when both inputs are 1, output is 0
-    nand_neuron = McCullochPittsNeuron(weights=[-1, -1], threshold=-1)
-    nand_outputs = nand_neuron.test_logic_gate(inputs_2bit)
-    plot_logic_gate("NAND", inputs_2bit, nand_outputs)
-    
-    print("\n===== NOR Gate =====")
-    # NOR gate: only when both inputs are 0, output is 1
-    nor_neuron = McCullochPittsNeuron(weights=[-1, -1], threshold=0)
-    nor_outputs = nor_neuron.test_logic_gate(inputs_2bit)
-    plot_logic_gate("NOR", inputs_2bit, nor_outputs)
-    
-    # Define input combinations for NOT gate
-    inputs_1bit = [
-        [0],
-        [1]
-    ]
-    
-    print("\n===== NOT Gate =====")
-    # NOT gate: invert the input
-    not_neuron = McCullochPittsNeuron(weights=[-1], threshold=0)
-    not_outputs = not_neuron.test_logic_gate(inputs_1bit)
-    plot_logic_gate("NOT", inputs_1bit, not_outputs)
-    
-    # XOR gate cannot be implemented with a single McCulloch-Pitts neuron
-    # It requires a network of neurons
-    print("\n===== XOR Gate =====")
-    print("XOR cannot be implemented with a single McCulloch-Pitts neuron.")
-    print("It requires a network of neurons.")
-    
+    # Show the plots
     plt.show()
 
 if __name__ == "__main__":
@@ -155,30 +114,42 @@ if __name__ == "__main__":
 
 ### Output
 ```
-===== AND Gate =====
-Inputs: [0, 0], Output: 0
-Inputs: [0, 1], Output: 0
-Inputs: [1, 0], Output: 0
-Inputs: [1, 1], Output: 1
+PS V:\Deeptanshu Lal\PROJECTS\ML> python .\exp-6\exp-6.py
 
-===== OR Gate =====
-Inputs: [0, 0], Output: 0
-Inputs: [0, 1], Output: 1
-Inputs: [1, 0], Output: 1
-Inputs: [1, 1], Output: 1
+=============== Naive Bayes on Iris Dataset ===============
 
-===== NAND Gate =====
-Inputs: [0, 0], Output: 1
-Inputs: [0, 1], Output: 1
-Inputs: [1, 0], Output: 1
-Inputs: [1, 1], Output: 0
+Dataset Information:
+Number of samples: 150
+Number of features: 4
+Number of classes: 3
+Classes: ['setosa' 'versicolor' 'virginica']
+Features: ['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
 
-===== NOR Gate =====
-Inputs: [0, 0], Output: 1
-Inputs: [0, 1], Output: 0
-Inputs: [1, 0], Output: 0
-Inputs: [1, 1], Output: 0
+Training set size: 105
+Test set size: 45
 
-===== NOT Gate =====
-Inputs: [0], Output: 1
-Inputs: [1], Output: 0
+Training Naive Bayes classifier...
+
+Accuracy: 0.9778 (97.78%)
+
+Confusion Matrix:
+[[19  0  0]
+ [ 0 12  1]
+ [ 0  0 13]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        19
+  versicolor       1.00      0.92      0.96        13
+   virginica       0.93      1.00      0.96        13
+
+    accuracy                           0.98        45
+   macro avg       0.98      0.97      0.97        45
+weighted avg       0.98      0.98      0.98        45
+
+```
+
+### Visual Outputs
+![Iris Confusion Matrix](https://github.com/Deeptanshuu/ML/raw/main/exp-6/naive_bayes_iris_confusion_matrix.png)
+![Iris Feature Distribution](https://github.com/Deeptanshuu/ML/raw/main/exp-6/naive_bayes_iris_feature_distribution.png)
